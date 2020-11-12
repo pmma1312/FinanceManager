@@ -26,11 +26,13 @@ namespace FinanceManager.Service
     public class UserService : IUserService
     {
         private IUserRepository _userRepository;
+        private IMonthlyBalanceRepository _monthlyBalanceRepository;
         private IConfiguration _config;
 
-        public UserService(IUserRepository userRepository, IConfiguration config)
+        public UserService(IUserRepository userRepository, IMonthlyBalanceRepository monthlyBalanceRepository, IConfiguration config)
         {
             _userRepository = userRepository;
+            _monthlyBalanceRepository = monthlyBalanceRepository;
             _config = config;
         }
 
@@ -45,6 +47,13 @@ namespace FinanceManager.Service
             if (dbUser.Password != user.Password) return InvalidCredentialsResponse(response);
 
             response.Data.Add("token", GenerateJSONWebToken(dbUser));
+
+            var monthlyBalance = await _monthlyBalanceRepository.GetNewestMonthlyBalance(dbUser.UserId);
+
+            if(monthlyBalance is null || monthlyBalance.ValidUntil < DateTime.Now)
+            {
+                response.Data.Add("hasToSetMonthlyBalance", true);
+            }
 
             return response;
         }
@@ -91,6 +100,7 @@ namespace FinanceManager.Service
             await _userRepository.Insert(newUser);
 
             response.Data.Add("token", GenerateJSONWebToken(newUser));
+            response.Data.Add("hasToSetMonthlyBalance", true);
 
             return response;
         }

@@ -9,6 +9,7 @@ namespace FinanceManager.Infrastructure.Repository.DependencyInjection
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IMonthlyBalanceRepository, MonthlyBalanceRepository>();
 
             return services;
         }
