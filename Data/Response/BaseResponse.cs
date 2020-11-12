@@ -7,7 +7,7 @@ namespace FinanceManager.Data.Response
     {
         public ResponseInfos Infos { get; set; }
         public Dictionary<string, object> Data { get; set; }
-        public bool HasError => Infos.Errors.Count > 0;
+        public bool HasErrors => Infos.Errors.Count > 0;
         public bool HasInfos => Infos.Infos.Count > 0;
         public bool HasMessages => Infos.Messages.Count > 0;
         public HttpStatusCode StatusCode { get; set; }
