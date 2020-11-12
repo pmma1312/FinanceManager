@@ -35,7 +35,10 @@ namespace FinanceManager
             // Download and install https://downloads.mysql.com/archives/c-net/
             // Version 8.0.21
             // https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
-            services.AddDatabaseDependencyInjection();
+            services.AddDbContext<FinanceManagerContext>(options => options
+                        .UseMySQL("Server=localhost;Database=financemanager;Uid=finance_manager;Pwd=1337"));
+
+            services.AddRepositories();
             services.AddFinanceManagerServices();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

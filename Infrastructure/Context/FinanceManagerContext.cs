@@ -5,20 +5,15 @@ namespace FinanceManager.Infrastructure.Context
 {
     public class FinanceManagerContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-        public DbSet<MonthlyBalance> MonthlyBalances { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Booking> Bookings { get; set; }
+        public virtual DbSet<MonthlyBalance> MonthlyBalances { get; set; }
+        
+        public FinanceManagerContext(DbContextOptions<FinanceManagerContext> options) : base(options)
         {
-            builder
-                .UseMySql("server=localhost;database=FinanceManager;user=finance_manager;password=1337", new MySqlServerVersion("8.0.21"));
+            Database.EnsureCreated();
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
     }
 }
