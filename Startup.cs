@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FinanceManager.Infrastructure.Context;
+using FinanceManager.Infrastructure.Repository.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FinanceManager
 {
@@ -30,9 +34,23 @@ namespace FinanceManager
             // Download and install https://downloads.mysql.com/archives/c-net/
             // Version 8.0.21
             // https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
-            services.AddDbContext<FinanceManagerContext>(options => {
-                options.UseMySQL("server=localhost;database=FinanceManager;user=finance_manager;password=1337");
-            });
+            services.AddDatabaseDependencyInjection();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+               .AddJwtBearer(options =>
+               {
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       ValidIssuer = Configuration["Jwt:Issuer"],
+                       ValidAudience = Configuration["Jwt:Issuer"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                   };
+               });
+
             services.AddControllers();
         }
 
