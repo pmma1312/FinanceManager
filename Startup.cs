@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinanceManager.Infrastructure.Context;
 using FinanceManager.Infrastructure.Repository.DependencyInjection;
+using FinanceManager.Service.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +36,7 @@ namespace FinanceManager
             // Version 8.0.21
             // https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
             services.AddDatabaseDependencyInjection();
+            services.AddFinanceManagerServices();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>

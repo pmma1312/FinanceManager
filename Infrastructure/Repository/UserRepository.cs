@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Infrastructure.Repository
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
         public Task<User> GetByUsername(string username);
+        public Task<User> GetByEmail(string email);
     }
 
     public class UserRepository : GenericRepository<User>, IUserRepository
@@ -21,6 +22,11 @@ namespace FinanceManager.Infrastructure.Repository
         public async Task<User> GetByUsername(string username)
         {
             return await _context.Users.Where(user => user.Username == username).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> GetByEmail(string email)
+        {
+            return await _context.Users.Where(user => user.Email == email).FirstOrDefaultAsync();
         }
 
     }

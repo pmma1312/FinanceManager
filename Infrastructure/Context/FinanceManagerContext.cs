@@ -10,6 +10,15 @@ namespace FinanceManager.Infrastructure.Context
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<MonthlyBalance> MonthlyBalances { get; set; }
 
-        public FinanceManagerContext(DbContextOptions<FinanceManagerContext> options) : base(options) { }
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            builder
+                .UseMySql("server=localhost;database=FinanceManager;user=finance_manager;password=1337", new MySqlServerVersion("8.0.21"));
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

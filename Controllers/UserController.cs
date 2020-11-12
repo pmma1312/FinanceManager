@@ -23,5 +23,13 @@ namespace FinanceManager.Controllers
             var response = await _userService.Authenticate(user);
             return StatusCode((int) response.StatusCode, response);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<BaseResponse>> Register(RegistrationDto user)
+        {
+            var response = await _userService.Register(user);
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }
