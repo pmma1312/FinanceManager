@@ -29,5 +29,12 @@ namespace FinanceManager.Controllers
             return StatusCode((int) response.StatusCode, response);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> Get()
+        {
+            var response = await _monthlyBalanceService.Get();
+            return StatusCode((int) response.StatusCode, response);
+        }
     }
 }

@@ -14,17 +14,20 @@ namespace FinanceManager.Service
     public interface IMonthlyBalanceService
     {
         public Task<BaseResponse> Create(MonthlyBalanceDto monthlyBalance);
+        public Task<BaseResponse> Get();
     }
 
     public class MonthlyBalanceService : IMonthlyBalanceService
     {
 
         private IMonthlyBalanceRepository _monthlyBalanceRepository;
+        private IBookingRepository _bookingRepository;
         private IRequestDataService _requestDataService;
 
-        public MonthlyBalanceService(IMonthlyBalanceRepository monthlyBalanceRepository, IRequestDataService requestDataService)
+        public MonthlyBalanceService(IMonthlyBalanceRepository monthlyBalanceRepository, IBookingRepository bookingRepository, IRequestDataService requestDataService)
         {
             _monthlyBalanceRepository = monthlyBalanceRepository;
+            _bookingRepository = bookingRepository;
             _requestDataService = requestDataService;
         }
 
@@ -64,6 +67,26 @@ namespace FinanceManager.Service
             dbBalance.BalanceUser = null;
 
             response.Data.Add("balance", dbBalance);
+
+            return response;
+        }
+
+        public async Task<BaseResponse> Get()
+        {
+            var response = new BaseResponse();
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now);
+
+            var balance = (await _monthlyBalanceRepository.GetNewestMonthlyBalance(currentUser.UserId)).AvailableMonthlyBalance;
+
+            bookings.ForEach(booking =>
+            {
+                balance -= booking.BookingAmount;
+            });
+
+            response.Data.Add("balance", balance);
 
             return response;
         }

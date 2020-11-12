@@ -10,6 +10,7 @@ namespace FinanceManager.Service.DependencyInjection
             services.AddScoped<IRequestDataService, RequestDataService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IMonthlyBalanceService, MonthlyBalanceService>();
+            services.AddScoped<IBookingService, BookingService>();
 
             return services;
         }
