@@ -1,8 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FinanceManager.Service.DependencyInjection
 {
@@ -11,6 +7,8 @@ namespace FinanceManager.Service.DependencyInjection
         public static IServiceCollection AddFinanceManagerServices(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRequestDataService, RequestDataService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             return services;
         }

@@ -42,11 +42,7 @@ namespace FinanceManager.Infrastructure.Repository
         public async Task<T> GetById(long id)
         {
             return await _entities
-                            .Where(entity => (long)entity
-                                .GetType()
-                                .GetProperty($"{typeof(T).Name}Id")
-                                .GetValue(entity, null) == id)
-                            .FirstOrDefaultAsync();
+                            .FindAsync(id);
         }
 
         public async Task<T> Insert(T value)

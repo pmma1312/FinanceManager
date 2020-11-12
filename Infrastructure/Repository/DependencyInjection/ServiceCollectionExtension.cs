@@ -1,6 +1,4 @@
-﻿using FinanceManager.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace FinanceManager.Infrastructure.Repository.DependencyInjection
 {
@@ -9,6 +7,8 @@ namespace FinanceManager.Infrastructure.Repository.DependencyInjection
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IBookingRepository, BookingRepository>();
 
             return services;
         }

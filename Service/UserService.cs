@@ -110,7 +110,8 @@ namespace FinanceManager.Service
 
             var claims = new[]
             {
-              new Claim(JwtRegisteredClaimNames.Sub, user.Username)
+              new Claim("username", user.Username),
+              new Claim("userId", user.UserId.ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],

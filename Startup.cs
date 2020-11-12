@@ -32,6 +32,8 @@ namespace FinanceManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             // Download and install https://downloads.mysql.com/archives/c-net/
             // Version 8.0.21
             // https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
@@ -56,7 +58,9 @@ namespace FinanceManager
                    };
                });
 
-            services.AddControllers();
+            services.AddHttpContextAccessor();
+
+            services.AddMvc(options => options.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,16 +71,18 @@ namespace FinanceManager
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
+
+            app.UseCors(x => x
+               .AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseMvc();
         }
     }
 }
