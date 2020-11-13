@@ -11,7 +11,7 @@ namespace FinanceManager.Infrastructure.Repository
     public interface IBookingRepository : IRepository<Booking>
     {
         public Task<List<Booking>> GetBookingsWithCategory(long categoryId);
-        public Task<List<Booking>> GetBookingsForMonth(DateTime date);
+        public Task<List<Booking>> GetBookingsForMonth(DateTime date, long userId);
         public Task<List<Booking>> GetBookingsForUser(long userId);
         public Task<List<Booking>> GetBookingsWithCategory(long categoryId, long userId);
     }
@@ -40,13 +40,13 @@ namespace FinanceManager.Infrastructure.Repository
                 .ToListAsync();
         }
 
-        public async Task<List<Booking>> GetBookingsForMonth(DateTime date)
+        public async Task<List<Booking>> GetBookingsForMonth(DateTime date, long userId)
         {
             var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
             return await _context.Bookings
-                .Where(booking => booking.BookingDate > firstDayOfMonth && booking.BookingDate < lastDayOfMonth)
+                .Where(booking => booking.BookingDate > firstDayOfMonth && booking.BookingDate < lastDayOfMonth && booking.BookingUser.UserId == userId)
                 .ToListAsync();
         }
 

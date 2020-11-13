@@ -3,9 +3,6 @@ using FinanceManager.Data.Response;
 using FinanceManager.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinanceManager.Controllers
@@ -33,7 +30,16 @@ namespace FinanceManager.Controllers
         [Authorize]
         public async Task<ActionResult<BaseResponse>> Get()
         {
+            // Gets bookings in current period
             var response = await _bookingService.Get();
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpGet("all")]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> GetAll()
+        {
+            var response = await _bookingService.GetAll();
             return StatusCode((int)response.StatusCode, response);
         }
 

@@ -14,8 +14,9 @@ namespace FinanceManager.Service
     public interface IBookingService
     {
         public Task<BaseResponse> Create(BookingDto booking);
-        public Task<BaseResponse> Get();
+        public Task<BaseResponse> GetAll();
         public Task<BaseResponse> GetByCategoryId(long categoryId);
+        public Task<BaseResponse> Get();
     }
 
     public class BookingService : IBookingService
@@ -32,6 +33,19 @@ namespace FinanceManager.Service
         }
 
         public async Task<BaseResponse> Get()
+        {
+            var response = new BaseResponse();
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            var bookings = _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+
+            response.Data.Add("bookings", bookings);
+
+            return response;
+        }
+
+        public async Task<BaseResponse> GetAll()
         {
             var response = new BaseResponse();
 

@@ -77,7 +77,7 @@ namespace FinanceManager.Service
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now);
+            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
 
             var balance = (await _monthlyBalanceRepository.GetNewestMonthlyBalance(currentUser.UserId)).AvailableMonthlyBalance;
 
