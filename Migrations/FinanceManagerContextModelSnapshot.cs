@@ -32,6 +32,9 @@ namespace FinanceManager.Migrations
                     b.Property<string>("BookingDescription")
                         .HasColumnType("text");
 
+                    b.Property<int>("BookingType")
+                        .HasColumnType("int");
+
                     b.Property<long?>("CategoryId")
                         .HasColumnType("bigint");
 

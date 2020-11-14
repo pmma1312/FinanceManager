@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinanceManager.Migrations
 {
     [DbContext(typeof(FinanceManagerContext))]
-    [Migration("20201112135450_Initial")]
+    [Migration("20201114104822_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,9 @@ namespace FinanceManager.Migrations
 
                     b.Property<string>("BookingDescription")
                         .HasColumnType("text");
+
+                    b.Property<int>("BookingType")
+                        .HasColumnType("int");
 
                     b.Property<long?>("CategoryId")
                         .HasColumnType("bigint");

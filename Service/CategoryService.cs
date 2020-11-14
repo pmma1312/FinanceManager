@@ -68,7 +68,7 @@ namespace FinanceManager.Service
 
             if(bookings.Count > 0)
             {
-                response.Infos.Errors.Add($"Category {dbCategory.CategoryName} can't be deleted because it has bookings that reference the category");
+                response.Infos.Errors.Add($"Category {dbCategory.CategoryName} can't be deleted because bookings exist that reference this category");
                 response.StatusCode = HttpStatusCode.UnprocessableEntity;
                 return response;
             }

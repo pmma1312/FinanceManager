@@ -36,5 +36,22 @@ namespace FinanceManager.Controllers
             var response = await _monthlyBalanceService.Get();
             return StatusCode((int) response.StatusCode, response);
         }
+
+        [HttpGet("spendings")]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> GetSpendings()
+        {
+            var response = await _monthlyBalanceService.GetSpendings();
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpGet("revenue")]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> GetRevenue()
+        {
+            var response = await _monthlyBalanceService.GetRevenue();
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }

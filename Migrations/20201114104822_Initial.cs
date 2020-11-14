@@ -74,6 +74,7 @@ namespace FinanceManager.Migrations
                     UserId = table.Column<long>(nullable: true),
                     BookingDate = table.Column<DateTime>(nullable: false),
                     BookingAmount = table.Column<float>(nullable: false),
+                    BookingType = table.Column<int>(nullable: false),
                     BookingDescription = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

@@ -1,4 +1,5 @@
 ﻿using FinanceManager.Data.DataTransferObjects;
+using FinanceManager.Data.Enum;
 using FinanceManager.Data.Response;
 using FinanceManager.Infrastructure.Model;
 using FinanceManager.Infrastructure.Repository;
@@ -15,6 +16,8 @@ namespace FinanceManager.Service
     {
         public Task<BaseResponse> Create(MonthlyBalanceDto monthlyBalance);
         public Task<BaseResponse> Get();
+        public Task<BaseResponse> GetSpendings();
+        public Task<BaseResponse> GetRevenue();
     }
 
     public class MonthlyBalanceService : IMonthlyBalanceService
@@ -83,12 +86,52 @@ namespace FinanceManager.Service
 
             bookings.ForEach(booking =>
             {
-                balance -= booking.BookingAmount;
+                if (booking.BookingType == BookingTypeEnum.Spending)
+                    balance -= booking.BookingAmount;
+                else
+                    balance += booking.BookingAmount;
             });
 
-            response.Data.Add("balance", balance);
+            response.Data.Add("balance", Math.Round(balance, 2));
 
             return response;
+        }
+
+        public async Task<BaseResponse> GetSpendings()
+        {
+            var response = new BaseResponse();
+
+            response.Data.Add("spendings", await GetRevenueOrSpendings(BookingTypeEnum.Spending));
+
+            return response;
+        }
+
+        public async Task<BaseResponse> GetRevenue()
+        {
+            var response = new BaseResponse();
+
+            response.Data.Add("revenue", await GetRevenueOrSpendings(BookingTypeEnum.Revenue));
+
+            return response;
+        }
+
+        private async Task<float> GetRevenueOrSpendings(BookingTypeEnum bookingType)
+        {
+            float total = 0;
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+
+            bookings.ForEach(booking =>
+            {
+                if (booking.BookingType == bookingType)
+                {
+                    total += booking.BookingAmount;
+                }
+            });
+
+            return total;
         }
 
     }

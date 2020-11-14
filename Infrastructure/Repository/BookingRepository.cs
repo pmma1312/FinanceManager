@@ -46,7 +46,12 @@ namespace FinanceManager.Infrastructure.Repository
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
             return await _context.Bookings
-                .Where(booking => booking.BookingDate > firstDayOfMonth && booking.BookingDate < lastDayOfMonth && booking.BookingUser.UserId == userId)
+                .Where(booking => booking.BookingDate > firstDayOfMonth 
+                    && booking.BookingDate < lastDayOfMonth 
+                    && booking.BookingUser.UserId == userId)
+                    .Include(booking => booking.BookingCategory)
+                    .AsNoTracking()
+                .OrderByDescending(booking => booking.BookingDate)
                 .ToListAsync();
         }
 

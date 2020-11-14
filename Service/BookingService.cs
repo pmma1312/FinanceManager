@@ -4,7 +4,6 @@ using FinanceManager.Infrastructure.Model;
 using FinanceManager.Infrastructure.Repository;
 using FinanceManager.Infrastructure.Validation;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,6 +16,7 @@ namespace FinanceManager.Service
         public Task<BaseResponse> GetAll();
         public Task<BaseResponse> GetByCategoryId(long categoryId);
         public Task<BaseResponse> Get();
+        public Task<BaseResponse> Delete(long bookingId);
     }
 
     public class BookingService : IBookingService
@@ -38,7 +38,7 @@ namespace FinanceManager.Service
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
 
             response.Data.Add("bookings", bookings);
 
@@ -107,13 +107,41 @@ namespace FinanceManager.Service
                 BookingCategory = dbCategory,
                 BookingDate = DateTime.Now,
                 BookingUser = currentUser,
-                BookingDescription = booking.BookingDescription
+                BookingDescription = booking.BookingDescription,
+                BookingType = booking.BookingType
             };
 
             var responseBooking = await _bookingRepository.Insert(newBooking);
             responseBooking.BookingUser.Password = null;
 
             response.Data.Add("booking", responseBooking);
+
+            return response;
+        }
+
+        public async Task<BaseResponse> Delete(long bookingId)
+        {
+            var response = new BaseResponse();
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            var dbBooking = await _bookingRepository.GetById(bookingId);
+
+            if(dbBooking is null)
+            {
+                response.Infos.Errors.Add("The booking that you're trying to delete doesn't exist");
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            if(dbBooking.BookingUser.UserId != currentUser.UserId)
+            {
+                response.Infos.Errors.Add("You can only delete your own booking entries");
+                response.StatusCode = HttpStatusCode.Unauthorized;
+                return response;
+            }
+
+            await _bookingRepository.Delete(dbBooking);
 
             return response;
         }

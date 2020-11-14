@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinanceManager.Data.Enum;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,6 +15,7 @@ namespace FinanceManager.Infrastructure.Model
         public User BookingUser { get; set; }
         public DateTime BookingDate { get; set; }
         public float BookingAmount { get; set; }
+        public BookingTypeEnum BookingType { get; set; }
         public string? BookingDescription { get; set; }
     }
 }

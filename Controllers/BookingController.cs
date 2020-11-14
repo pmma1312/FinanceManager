@@ -43,6 +43,14 @@ namespace FinanceManager.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpDelete("{bookingId}")]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> Delete(long bookingId)
+        {
+            var response = await _bookingService.Delete(bookingId);
+            return StatusCode((int)response.StatusCode, response);
+        }
+
         [HttpGet("category/{categoryId}")]
         [Authorize]
         public async Task<ActionResult<BaseResponse>> GetByCategoryId(long categoryId)
