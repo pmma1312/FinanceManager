@@ -53,5 +53,13 @@ namespace FinanceManager.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpGet("categories")]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse>> GetForEachCategory()
+        {
+            var response = await _monthlyBalanceService.GetForEachCategory();
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }

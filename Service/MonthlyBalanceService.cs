@@ -18,6 +18,7 @@ namespace FinanceManager.Service
         public Task<BaseResponse> Get();
         public Task<BaseResponse> GetSpendings();
         public Task<BaseResponse> GetRevenue();
+        public Task<BaseResponse> GetForEachCategory();
     }
 
     public class MonthlyBalanceService : IMonthlyBalanceService
@@ -93,6 +94,49 @@ namespace FinanceManager.Service
             });
 
             response.Data.Add("balance", Math.Round(balance, 2));
+
+            return response;
+        }
+
+        public async Task<BaseResponse> GetForEachCategory()
+        {
+            var response = new BaseResponse();
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+
+            var categories = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+
+            categories = categories
+                      .GroupBy(booking => booking.BookingCategory.CategoryName)
+                      .Select(b => b.First())
+                      .Select(booking =>
+                      {
+                          booking.BookingAmount = 0;
+
+                          return booking;
+                      })
+                      .ToList();
+
+            bookings.ForEach(booking =>
+            {
+                categories.ForEach(category =>
+                {
+                    if (category.BookingCategory.CategoryName == booking.BookingCategory.CategoryName) {
+                        if (booking.BookingType == BookingTypeEnum.Spending)
+                            category.BookingAmount -= booking.BookingAmount;
+                        else
+                            category.BookingAmount += booking.BookingAmount;
+                    }
+                });
+            });
+
+
+            var resultCategories = categories
+                .Select(category => new { category.BookingCategory.CategoryName, category.BookingAmount });
+
+            response.Data.Add("categoryBookings", resultCategories);
 
             return response;
         }
