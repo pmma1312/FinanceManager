@@ -132,7 +132,6 @@ namespace FinanceManager.Service
                 });
             });
 
-
             var resultCategories = categories
                 .Select(category => new { category.BookingCategory.CategoryName, category.BookingAmount });
 

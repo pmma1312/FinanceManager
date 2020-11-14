@@ -59,6 +59,7 @@ namespace FinanceManager.Infrastructure.Repository
         {
             return await _context.Bookings
                 .Where(booking => booking.BookingUser.UserId == userId)
+                .OrderByDescending(booking => booking.BookingDate)
                 .AsNoTracking()
                 .Include(booking => booking.BookingCategory)
                     .AsNoTracking()
