@@ -9,6 +9,7 @@ using FinanceManager.Service.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ namespace FinanceManager
             // Version 8.0.21
             // https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
             services.AddDbContext<FinanceManagerContext>(options => options
-                        .UseMySQL("Server=localhost;Database=financemanager;Uid=finance_manager;Pwd=1337"));
+                        .UseMySQL("Server=localhost;Database=FinanceManager;Uid=finance_manager;Pwd=1337"));
 
             services.AddRepositories();
             services.AddFinanceManagerServices();
@@ -70,6 +71,11 @@ namespace FinanceManager
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthentication();
 

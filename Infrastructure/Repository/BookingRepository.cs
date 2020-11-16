@@ -42,8 +42,8 @@ namespace FinanceManager.Infrastructure.Repository
 
         public async Task<List<Booking>> GetBookingsForMonth(DateTime date, long userId)
         {
-            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            var lastDayOfMonth = new DateTime(date.Year, date.Month, 25);
+            var firstDayOfMonth = lastDayOfMonth.AddMonths(-1).AddDays(-1);
 
             return await _context.Bookings
                 .Where(booking => booking.BookingDate > firstDayOfMonth 
