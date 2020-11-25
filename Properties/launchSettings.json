@@ -15,7 +15,8 @@
       "launchUrl": "http://localhost:8080/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "nativeDebugging": true
     },
     "FinanceManager": {
       "commandName": "Project",
