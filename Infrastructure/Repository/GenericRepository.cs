@@ -56,23 +56,11 @@ namespace FinanceManager.Infrastructure.Repository
         {
             bool isUpdated = false;
 
-            var dbEntity = await _entities
-                            .FirstOrDefaultAsync(entity =>
-                                (long)entity
-                                    .GetType()
-                                    .GetProperty($"{typeof(T).Name}Id")
-                                    .GetValue(entity, null)
-                                    ==
-                                (long)value.GetType()
-                                    .GetProperty($"{typeof(T).Name}Id")
-                                    .GetValue(entity, null));
+            _entities.Attach(value);
+            _context.Entry(value).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            if (!(dbEntity is null))
-            {
-                _context.Entry(dbEntity).CurrentValues.SetValues(value);
-                await _context.SaveChangesAsync();
-                isUpdated = true;
-            }
+            isUpdated = true;
 
             return isUpdated;
         }

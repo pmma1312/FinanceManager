@@ -15,6 +15,7 @@ namespace FinanceManager.Service
     public interface IMonthlyBalanceService
     {
         public Task<BaseResponse> Create(MonthlyBalanceDto monthlyBalance);
+        public Task<BaseResponse> Update(MonthlyBalanceDto monthlyBalance);
         public Task<BaseResponse> Get();
         public Task<BaseResponse> GetSpendings();
         public Task<BaseResponse> GetRevenue();
@@ -75,6 +76,60 @@ namespace FinanceManager.Service
             return response;
         }
 
+        public async Task<BaseResponse> Update(MonthlyBalanceDto monthlyBalance)
+        {
+            var response = new BaseResponse();
+
+            if(!monthlyBalance.MonthlyBalanceId.HasValue)
+            {
+                response.Infos.Errors.Add("Monthly BalanceId is required to update");
+                response.StatusCode = HttpStatusCode.UnprocessableEntity;
+                return response;
+            }
+
+            var dbBalance = await _monthlyBalanceRepository.GetById(monthlyBalance.MonthlyBalanceId.Value);
+
+            if(dbBalance is null)
+            {
+                response.Infos.Errors.Add($"BalanceId {monthlyBalance.MonthlyBalanceId} has not been found");
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            User currentUser = await _requestDataService.GetCurrentUser();
+
+            if(dbBalance.BalanceUser.UserId != currentUser.UserId)
+            {
+                response.Infos.Errors.Add("You can only edit balances that belong to you");
+                response.StatusCode = HttpStatusCode.Unauthorized;
+                return response;
+            }
+
+            MonthlyBalanceDtoValidator validator = new MonthlyBalanceDtoValidator();
+            var validationResult = await validator.ValidateAsync(monthlyBalance);
+
+            if(!validationResult.IsValid)
+            {
+                response.Infos.Errors.AddRange(validationResult.Errors.Select(error => error.ErrorMessage));
+                response.StatusCode = HttpStatusCode.UnprocessableEntity;
+                return response;
+            }
+
+            dbBalance.AvailableMonthlyBalance = monthlyBalance.AvailableMonthlyBalance;
+            dbBalance.ValidUntil = monthlyBalance.ValidUntil;
+
+            if(!await _monthlyBalanceRepository.Update(dbBalance))
+            {
+                response.Infos.Errors.Add("The update has failed");
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                return response;
+            }
+
+            response.Data.Add("balance", dbBalance);
+
+            return response;
+        }
+
         public async Task<BaseResponse> Get()
         {
             var response = new BaseResponse();
@@ -83,7 +138,8 @@ namespace FinanceManager.Service
 
             var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
 
-            var balance = (await _monthlyBalanceRepository.GetNewestMonthlyBalance(currentUser.UserId)).AvailableMonthlyBalance;
+            var balanceObject = await _monthlyBalanceRepository.GetNewestMonthlyBalance(currentUser.UserId);
+            var balance = balanceObject.AvailableMonthlyBalance;
 
             bookings.ForEach(booking =>
             {
@@ -94,6 +150,7 @@ namespace FinanceManager.Service
             });
 
             response.Data.Add("balance", Math.Round(balance, 2));
+            response.Data.Add("balanceObject", balanceObject);
 
             return response;
         }
