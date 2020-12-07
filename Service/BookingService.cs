@@ -15,7 +15,7 @@ namespace FinanceManager.Service
         public Task<BaseResponse> Create(BookingDto booking);
         public Task<BaseResponse> GetAll();
         public Task<BaseResponse> GetByCategoryId(long categoryId);
-        public Task<BaseResponse> Get();
+        public Task<BaseResponse> Get(int year, int month);
         public Task<BaseResponse> Delete(long bookingId);
     }
 
@@ -32,13 +32,27 @@ namespace FinanceManager.Service
             _requestDataService = requestDataService;
         }
 
-        public async Task<BaseResponse> Get()
+        public async Task<BaseResponse> Get(int year, int month)
         {
             var response = new BaseResponse();
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+            if(month < 1 || month > 12)
+            {
+                response.Infos.Errors.Add("Month has to be between 1 and 12");
+                return response;
+            }
+
+            var date = new DateTime(year, month, 1);
+
+            if(date > DateTime.Now)
+            {
+                response.Infos.Errors.Add("Requested date can't be in the future");
+                return response;
+            }
+
+            var bookings = await _bookingRepository.GetBookingsForMonth(date, currentUser.UserId);
 
             response.Data.Add("bookings", bookings);
 

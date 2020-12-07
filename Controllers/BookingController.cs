@@ -26,12 +26,12 @@ namespace FinanceManager.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [HttpGet]
+        [HttpGet("{year}/{month}")]
         [Authorize]
-        public async Task<ActionResult<BaseResponse>> Get()
+        public async Task<ActionResult<BaseResponse>> Get(int year, int month)
         {
-            // Gets bookings in current period
-            var response = await _bookingService.Get();
+            // Gets bookings in specified period
+            var response = await _bookingService.Get(year, month);
             return StatusCode((int)response.StatusCode, response);
         }
 
