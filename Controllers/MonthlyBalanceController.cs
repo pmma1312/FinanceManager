@@ -37,11 +37,11 @@ namespace FinanceManager.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [HttpGet]
+        [HttpGet("{year}/{month}")]
         [Authorize]
-        public async Task<ActionResult<BaseResponse>> Get()
+        public async Task<ActionResult<BaseResponse>> Get(int year, int month)
         {
-            var response = await _monthlyBalanceService.Get();
+            var response = await _monthlyBalanceService.Get(year, month);
             return StatusCode((int) response.StatusCode, response);
         }
 

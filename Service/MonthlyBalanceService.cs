@@ -16,7 +16,7 @@ namespace FinanceManager.Service
     {
         public Task<BaseResponse> Create(MonthlyBalanceDto monthlyBalance);
         public Task<BaseResponse> Update(MonthlyBalanceDto monthlyBalance);
-        public Task<BaseResponse> Get();
+        public Task<BaseResponse> Get(int year, int month);
         public Task<BaseResponse> GetSpendings(int year, int month);
         public Task<BaseResponse> GetRevenue(int year, int month);
         public Task<BaseResponse> GetForEachCategory(int year, int month);
@@ -130,13 +130,13 @@ namespace FinanceManager.Service
             return response;
         }
 
-        public async Task<BaseResponse> Get()
+        public async Task<BaseResponse> Get(int year, int month)
         {
             var response = new BaseResponse();
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+            var bookings = await _bookingRepository.GetBookingsForMonth(new DateTime(year, month, 1), currentUser.UserId);
 
             var balanceObject = await _monthlyBalanceRepository.GetNewestMonthlyBalance(currentUser.UserId);
             var balance = balanceObject.AvailableMonthlyBalance;
