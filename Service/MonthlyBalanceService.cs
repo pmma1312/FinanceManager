@@ -17,9 +17,9 @@ namespace FinanceManager.Service
         public Task<BaseResponse> Create(MonthlyBalanceDto monthlyBalance);
         public Task<BaseResponse> Update(MonthlyBalanceDto monthlyBalance);
         public Task<BaseResponse> Get();
-        public Task<BaseResponse> GetSpendings();
-        public Task<BaseResponse> GetRevenue();
-        public Task<BaseResponse> GetForEachCategory();
+        public Task<BaseResponse> GetSpendings(int year, int month);
+        public Task<BaseResponse> GetRevenue(int year, int month);
+        public Task<BaseResponse> GetForEachCategory(int year, int month);
     }
 
     public class MonthlyBalanceService : IMonthlyBalanceService
@@ -155,15 +155,14 @@ namespace FinanceManager.Service
             return response;
         }
 
-        public async Task<BaseResponse> GetForEachCategory()
+        public async Task<BaseResponse> GetForEachCategory(int year, int month)
         {
             var response = new BaseResponse();
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
-
-            var categories = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+            var bookings = await _bookingRepository.GetBookingsForMonth(new DateTime(year, month, 1), currentUser.UserId);
+            var categories = await _bookingRepository.GetBookingsForMonth(new DateTime(year, month, 1), currentUser.UserId);
 
             categories = categories
                       .GroupBy(booking => booking.BookingCategory.CategoryName)
@@ -197,38 +196,35 @@ namespace FinanceManager.Service
             return response;
         }
 
-        public async Task<BaseResponse> GetSpendings()
+        public async Task<BaseResponse> GetSpendings(int year, int month)
         {
             var response = new BaseResponse();
 
-            response.Data.Add("spendings", await GetRevenueOrSpendings(BookingTypeEnum.Spending));
+            response.Data.Add("spendings", await GetRevenueOrSpendings(BookingTypeEnum.Spending, year, month));
 
             return response;
         }
 
-        public async Task<BaseResponse> GetRevenue()
+        public async Task<BaseResponse> GetRevenue(int year, int month)
         {
             var response = new BaseResponse();
 
-            response.Data.Add("revenue", await GetRevenueOrSpendings(BookingTypeEnum.Revenue));
+            response.Data.Add("revenue", await GetRevenueOrSpendings(BookingTypeEnum.Revenue, year, month));
 
             return response;
         }
 
-        private async Task<float> GetRevenueOrSpendings(BookingTypeEnum bookingType)
+        private async Task<float> GetRevenueOrSpendings(BookingTypeEnum bookingType, int year, int month)
         {
             float total = 0;
 
             User currentUser = await _requestDataService.GetCurrentUser();
 
-            var bookings = await _bookingRepository.GetBookingsForMonth(DateTime.Now, currentUser.UserId);
+            var bookings = await _bookingRepository.GetBookingsForMonth(new DateTime(year, month, 1), currentUser.UserId);
 
             bookings.ForEach(booking =>
             {
-                if (booking.BookingType == bookingType)
-                {
-                    total += booking.BookingAmount;
-                }
+                if (booking.BookingType == bookingType) total += booking.BookingAmount;
             });
 
             return total;

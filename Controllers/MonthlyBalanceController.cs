@@ -45,27 +45,27 @@ namespace FinanceManager.Controllers
             return StatusCode((int) response.StatusCode, response);
         }
 
-        [HttpGet("spendings")]
+        [HttpGet("spendings/{year}/{month}")]
         [Authorize]
-        public async Task<ActionResult<BaseResponse>> GetSpendings()
+        public async Task<ActionResult<BaseResponse>> GetSpendings(int year, int month)
         {
-            var response = await _monthlyBalanceService.GetSpendings();
+            var response = await _monthlyBalanceService.GetSpendings(year, month);
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [HttpGet("revenue")]
+        [HttpGet("revenue/{year}/{month}")]
         [Authorize]
-        public async Task<ActionResult<BaseResponse>> GetRevenue()
+        public async Task<ActionResult<BaseResponse>> GetRevenue(int year, int month)
         {
-            var response = await _monthlyBalanceService.GetRevenue();
+            var response = await _monthlyBalanceService.GetRevenue(year, month);
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [HttpGet("categories")]
+        [HttpGet("categories/{year}/{month}")]
         [Authorize]
-        public async Task<ActionResult<BaseResponse>> GetForEachCategory()
+        public async Task<ActionResult<BaseResponse>> GetForEachCategory(int year, int month)
         {
-            var response = await _monthlyBalanceService.GetForEachCategory();
+            var response = await _monthlyBalanceService.GetForEachCategory(year, month);
             return StatusCode((int)response.StatusCode, response);
         }
 
